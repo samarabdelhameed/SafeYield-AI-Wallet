@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import "../src/AuthenticationManager.sol";
 
 contract AuthenticationManagerTest is Test {
-    AuthenticationManager auth;
+    AuthenticationManager public auth;
 
     function setUp() public {
         auth = new AuthenticationManager();
@@ -13,26 +13,25 @@ contract AuthenticationManagerTest is Test {
 
     function testRegisterAndLogin() public {
         address user = address(0xBEEF);
-        bytes32 verifier = keccak256("secret-passkey");
+        bytes32 verifier = keccak256("valid-passkey");
 
         vm.prank(user);
         auth.register(verifier);
 
-        vm.prank(user);
-        bool isAuthenticated = auth.login(verifier);
+        bool isAuthenticated = auth.login(user, verifier);
         assertTrue(isAuthenticated);
     }
 
     function testDoubleRegisterShouldFail() public {
-        address user = address(0xCAFE);
-        bytes32 verifier = keccak256("first");
-        bytes32 secondVerifier = keccak256("second");
+        address user = address(0xBEEF);
+        bytes32 verifier1 = keccak256("valid-passkey");
+        bytes32 verifier2 = keccak256("another-passkey");
 
         vm.prank(user);
-        auth.register(verifier);
+        auth.register(verifier1);
 
         vm.prank(user);
         vm.expectRevert("Already registered");
-        auth.register(secondVerifier);
+        auth.register(verifier2);
     }
 }
