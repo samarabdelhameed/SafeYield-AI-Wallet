@@ -116,12 +116,6 @@ flowchart TD
 
 ---
 
-## 📌 Inspiration
-
-Inspired by [Clave](https://getclave.com) but upgraded for **AI + Intent + Cross-chain Yield** 🚀
-
----
-
 ## 📜 License
 
 MIT © 2025 SafeYield AI Wallet
