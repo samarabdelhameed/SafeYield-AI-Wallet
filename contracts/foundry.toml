@@ -2,9 +2,16 @@
 solc_version = "0.8.19"
 optimizer = true
 optimizer_runs = 200
+
+# Directories
 src = "src"
 out = "out"
+test = "test"
+cache_path = "cache"
 libs = ["lib"]
+
+# Remappings
 remappings = [
-  "@openzeppelin/=lib/openzeppelin-contracts/"
+  "@openzeppelin/=lib/openzeppelin-contracts/",
+  "forge-std/=lib/forge-std/src/"
 ]
