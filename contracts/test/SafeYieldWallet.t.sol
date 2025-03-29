@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 import "forge-std/Test.sol";
 import "../src/SafeYieldWallet.sol";
 import "../src/AuthenticationManager.sol";
+import "../src/lib/UserOperation.sol";
 
 contract SafeYieldWalletTest is Test {
     AuthenticationManager public auth;
@@ -32,7 +33,12 @@ contract SafeYieldWalletTest is Test {
             sender: user,
             signature: abi.encode("wrong-passkey"),
             callData: "",
-            nonce: 0
+            nonce: 0,
+            callGasLimit: 0,
+            verificationGasLimit: 0,
+            preVerificationGas: 0,
+            maxFeePerGas: 0,
+            maxPriorityFeePerGas: 0
         });
 
         vm.prank(entryPoint);
@@ -41,25 +47,24 @@ contract SafeYieldWalletTest is Test {
     }
 
     function testValidateUserOpShouldSucceed() public {
-        // تسجيل المستخدم فقط مرة واحدة
         string memory rawPasskey = "valid-passkey";
         bytes32 hashed = keccak256(abi.encodePacked(rawPasskey));
 
-        // تأكد من أن التسجيل يتم فقط مرة واحدة
         vm.prank(user);
-        try auth.register(hashed) {
-            // إذا فشل التسجيل، نحن في مرحلة اختبار، لذلك لا نقوم بعمل شيء هنا.
-        } catch (bytes memory) {}
+        try auth.register(hashed) {} catch {}
 
-        // بناء op بنفس الـ passkey الصحيح
         UserOperation memory op = UserOperation({
             sender: user,
             signature: abi.encodePacked(rawPasskey),
             callData: "",
-            nonce: 0
+            nonce: 0,
+            callGasLimit: 0,
+            verificationGasLimit: 0,
+            preVerificationGas: 0,
+            maxFeePerGas: 0,
+            maxPriorityFeePerGas: 0
         });
 
-        // محاولة تحقق من عملية التوثيق
         vm.prank(entryPoint);
         uint256 result = wallet.validateUserOp(op);
         assertEq(result, 0, "Validation should succeed for correct passkey");

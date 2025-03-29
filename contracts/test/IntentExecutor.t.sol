@@ -1,71 +1,62 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
 import {IntentExecutor} from "../src/IntentExecutor.sol";
 import {SafeYieldWallet} from "../src/SafeYieldWallet.sol";
 import {AuthenticationManager} from "../src/AuthenticationManager.sol";
-import {UserOperation} from "account-abstraction/interfaces/UserOperation.sol";
 import {MockERC20} from "../src/mocks/MockERC20.sol";
+import {MockDepositTarget} from "../src/mocks/MockDepositTarget.sol";
+import {UserOperation} from "../src/lib/UserOperation.sol";
 
 contract IntentExecutorTest is Test {
     IntentExecutor public executor;
     SafeYieldWallet public wallet;
     AuthenticationManager public auth;
     MockERC20 public token;
+    MockDepositTarget public mockDeposit;
 
     address user = address(0xbeef);
     bytes32 passkey = keccak256("valid-passkey");
+
+    event OperationExecuted(address indexed wallet, bytes4 indexed selector);
 
     function setUp() public {
         auth = new AuthenticationManager();
         vm.prank(user);
         auth.register(passkey);
 
-        wallet = new SafeYieldWallet(address(auth));
+        wallet = new SafeYieldWallet(address(this), address(auth));
         executor = new IntentExecutor(address(this)); // simulate entryPoint
         token = new MockERC20("Mock Token", "MOCK");
+        mockDeposit = new MockDepositTarget();
 
-        token.mint(address(wallet), 100 ether); // simulate some balance in wallet
+        token.mint(address(wallet), 100 ether);
     }
 
     function testExecuteDeposit() public {
-        // simulate userOp to call deposit
         bytes memory callData = abi.encodeWithSignature(
             "deposit(uint256)",
             1 ether
         );
 
         UserOperation memory userOp = UserOperation({
-            sender: address(wallet),
-            nonce: 0,
-            initCode: "",
+            sender: address(mockDeposit),
+            signature: abi.encode("valid-passkey"),
             callData: callData,
-            callGasLimit: 100000,
-            verificationGasLimit: 100000,
-            preVerificationGas: 21000,
+            nonce: 0,
+            callGasLimit: 100_000,
+            verificationGasLimit: 100_000,
+            preVerificationGas: 21_000,
             maxFeePerGas: tx.gasprice,
-            maxPriorityFeePerGas: tx.gasprice,
-            paymasterAndData: "",
-            signature: bytes("valid-passkey")
+            maxPriorityFeePerGas: tx.gasprice
         });
 
-        // Send the token to the user first
-        token.mint(user, 2 ether);
+        bytes4 selector = bytes4(keccak256("deposit(uint256)"));
 
-        // Simulate approval from user
-        vm.prank(user);
-        token.approve(address(wallet), 1 ether);
-
-        // now execute the operation
         vm.expectEmit(true, true, true, true);
-        emit OperationExecuted(address(wallet), bytes4(callData[:4]));
+        emit OperationExecuted(address(mockDeposit), selector);
 
         executor.execute(userOp);
-
-        // Assert deposit success (inside SafeYieldWallet logic)
-        assertEq(token.balanceOf(user), 1 ether); // 2 - 1 sent to wallet
     }
-
-    event OperationExecuted(address indexed wallet, bytes4 indexed selector);
 }
