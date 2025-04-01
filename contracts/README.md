@@ -1,27 +1,3 @@
-تمام يا سماح! 👌  
-هضيفلك دلوقتي ملف `README.md` جاهز داخل مجلد `contracts/` بالصيغة اللي كتبناها، وهيبقى منسق تمامًا.
-
----
-
-### ✅ خطوات الإضافة:
-
-1. افتحي المسار التالي:
-
-```
-SafeYield-AI-Wallet/contracts/
-```
-
-2. أنشئي ملف جديد اسمه:
-
-```
-README.md
-```
-
-3. انسخي الكود ده بالكامل 👇 وضيفيه في الملف:
-
----
-
-```markdown
 # 🧠 SafeYield AI Wallet – Smart Contracts
 
 This folder contains the smart contracts powering **SafeYield AI Wallet** – an EIP-4337-compatible smart account system that enables intent-based DeFi execution with biometric authentication, AI-driven investment recommendations, and cross-chain yield strategies.
@@ -86,6 +62,7 @@ Sample tests implemented include:
 ---
 
 ## 📂 Project Structure
+
 ```
 
 contracts/
@@ -151,5 +128,7 @@ Developed by **Sama7.eth** for DoraHacks 2025.
 Looking to build the future of AI-driven DeFi experiences with account abstraction, biometric auth, and intuitive intent-based UX.
 
 ---
+
+```
 
 ```

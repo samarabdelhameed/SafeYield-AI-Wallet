@@ -54,7 +54,7 @@ flowchart TD
 
 | Layer           | Tech                                                            |
 | --------------- | --------------------------------------------------------------- |
-| Smart Contracts | **Foundry**, based on Clave Earn contracts                      |
+| Smart Contracts | **Foundry**, based on Earn contracts                            |
 | Frontend        | **Next.js + TypeScript + TailwindCSS + Shadcn UI + RainbowKit** |
 | Backend         | **Node.js + Express + PostgreSQL**                              |
 | AI Engine       | **LangChain + OpenAI/GPT API**                                  |
@@ -106,13 +106,6 @@ flowchart TD
 - Modular contracts for recovery and permissions
 - zkSync/zk-rollup support for privacy yield
 - AI fine-tuning per wallet strategy
-
----
-
-## 🤝 Team
-
-- Developer: Samar Abdelhameed
-- AI/Backend/Contract: Fully modular and hackathon-ready
 
 ---
 
