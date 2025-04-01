@@ -1,11 +1,22 @@
 {
   "name": "backend",
   "dependencies": {
-    "express": "^4.0.0",
+    "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "axios": "^0.27.2",
+    "express": "^4.21.2",
     "langchain": "latest",
+    "morgan": "^1.10.0",
     "openai": "latest"
-  }
+  },
+  "version": "1.0.0",
+  "description": "This backend is the core engine powering the **SafeYield AI Wallet**, enabling users to:",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
