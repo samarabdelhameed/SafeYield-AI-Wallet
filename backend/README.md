@@ -177,9 +177,3 @@ Test via [Postman](https://postman.com) or cURL.
 ## 👩‍💻 Author
 
 Crafted with ❤️ by [@samarabdelhameed](https://github.com/samarabdelhameed)
-
----
-
-```
-
-```
