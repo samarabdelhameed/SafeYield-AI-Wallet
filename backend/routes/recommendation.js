@@ -1,9 +1,10 @@
+// routes/recommendation.js
+
 const express = require('express');
 const router = express.Router();
+const { getRecommendation } = require('../controllers/recommendationController');
 
-// Placeholder route
-router.post('/', (req, res) => {
-  res.json({ message: 'Recommendation endpoint working ✅' });
-});
+// ✅ Route to get AI DeFi recommendation
+router.post('/', getRecommendation);
 
 module.exports = router;

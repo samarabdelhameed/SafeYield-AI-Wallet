@@ -1,9 +1,12 @@
+// routes/intent.js
+
 const express = require('express');
 const router = express.Router();
 
-// Placeholder route
-router.post('/', (req, res) => {
-  res.json({ message: 'Intent endpoint hit ✅' });
-});
+// ✅ Import the intent handler
+const { handleIntent } = require('../controllers/intentController');
+
+// ✅ Route for handling user intent
+router.post('/', handleIntent);
 
 module.exports = router;

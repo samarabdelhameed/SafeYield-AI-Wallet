@@ -3,12 +3,18 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const dotenv = require('dotenv');
 
+// ✅ Load environment variables
+dotenv.config();
+
+// ✅ Import routes
 const authRoutes = require('./routes/auth');
 const intentRoutes = require('./routes/intent');
 const recommendationRoutes = require('./routes/recommendation');
 const espressoRoutes = require('./routes/espresso');
 
+// ✅ Init Express app
 const app = express();
 
 // ✅ Middlewares
