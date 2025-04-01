@@ -14,6 +14,7 @@ function buildUserOperation({ sender, action, token, amount, protocol }) {
     preVerificationGas: 21000,
     maxFeePerGas: 0,
     maxPriorityFeePerGas: 0,
+    paymasterAndData: "0x", // ✅ لازم يتبعت حتى لو مفيش paymaster
   };
 
   return userOp;
@@ -33,5 +34,5 @@ function encodeParams(amount) {
   return BigInt(amount * 1e18).toString(16).padStart(64, "0");
 }
 
-// ✅ Export as default function
+// ✅ Export
 module.exports = buildUserOperation;

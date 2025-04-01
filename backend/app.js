@@ -12,7 +12,7 @@ dotenv.config();
 const authRoutes = require('./routes/auth');
 const intentRoutes = require('./routes/intent');
 const recommendationRoutes = require('./routes/recommendation');
-const espressoRoutes = require('./routes/espresso');
+const espressoRoutes = require('./routes/espresso'); // ✅ Added Espresso
 
 // ✅ Init Express app
 const app = express();
@@ -26,7 +26,7 @@ app.use(morgan('dev'));
 app.use('/api/auth', authRoutes);
 app.use('/api/intent', intentRoutes);
 app.use('/api/recommendation', recommendationRoutes);
-app.use('/api/espresso', espressoRoutes);
+app.use('/api/espresso', espressoRoutes); // ✅ Route for Espresso confirmation
 
 // ✅ Root route
 app.get('/', (req, res) => {

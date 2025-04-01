@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const { confirmInclusion } = require('../controllers/espressoController');
 
-// Placeholder route
-router.post('/', (req, res) => {
-  res.json({ message: 'Espresso confirm endpoint working ☕️' });
-});
+// Route: POST /api/espresso/confirm
+router.post('/confirm', confirmInclusion);
 
 module.exports = router;
