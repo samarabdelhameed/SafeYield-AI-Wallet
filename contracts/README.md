@@ -1,134 +1,166 @@
 # 🧠 SafeYield AI Wallet – Smart Contracts
 
-This folder contains the smart contracts powering **SafeYield AI Wallet** – an EIP-4337-compatible smart account system that enables intent-based DeFi execution with biometric authentication, AI-driven investment recommendations, and cross-chain yield strategies.
+This folder contains the smart contracts powering **SafeYield AI Wallet** – an **EIP-4337-compatible smart account system** that enables **intent-based DeFi execution** with **biometric authentication**, **AI-driven investment logic**, and **cross-chain yield farming** potential.
 
 ---
 
 ## 🎯 Key Features
 
-| Feature                             | Description                                                                |
-| ----------------------------------- | -------------------------------------------------------------------------- |
-| ✅ **Intent Execution**             | Execute user operations as intents via `IntentExecutor.sol`                |
-| ✅ **Modular Vault System**         | Deposit, withdraw, and auto-claim yield via `SafeYieldVault.sol`           |
-| ✅ **Plug-and-Play Strategies**     | Fixed-rate yield strategies via `IYieldStrategy` interface                 |
-| ✅ **Authentication with Passkeys** | WebAuthn-style on-chain verification via `AuthenticationManager.sol`       |
-| ✅ **EIP-4337 Integration**         | Smart account logic in `SafeYieldWallet.sol` mimicking EntryPoint behavior |
-| ✅ **Intent Routing**               | Route user-defined intents to target protocols via `IntentRouter.sol`      |
-| ✅ **Testing with Foundry**         | Comprehensive test suite across all contracts                              |
+| Feature                    | Description                                                         |
+| -------------------------- | ------------------------------------------------------------------- |
+| ✅ Intent Execution        | Process and dispatch `UserOperation`s based on user-defined intents |
+| ✅ Modular Vault System    | Deposit, withdraw, and auto-claim yield via `SafeYieldVault.sol`    |
+| ✅ Pluggable Strategies    | Attach yield modules like `FixedRateStrategy` via `IYieldStrategy`  |
+| ✅ Passkey Authentication  | On-chain signature verification via `AuthenticationManager.sol`     |
+| ✅ Account Abstraction     | Wallet supports `validateUserOp()` + `execute()` as per ERC-4337    |
+| ✅ Intent Routing          | `IntentRouter.sol` maps intent categories to destination vaults     |
+| ✅ Full Foundry Test Suite | Contract-level tests using Forge & Anvil                            |
 
 ---
 
-## 💡 Targeted Hackathon Tracks
+## 🧩 Contract Flow
 
-This smart contract stack aligns directly with the following DoraHacks tracks:
-
-| Track                          | Our Integration                                                                              |
-| ------------------------------ | -------------------------------------------------------------------------------------------- |
-| **Open Intents Applications**  | Intent-based architecture via `IntentExecutor.sol`, `IntentRouter.sol` + `UserOperation.sol` |
-| **Best Composable Apps**       | Modular yield strategies + vaults compatible with Aave, Compound (future-ready)              |
-| **AI + Wallet UI Integration** | Agents analyze user state and generate `UserOperation` for execution                         |
-| **Core Espresso Challenge**    | Espresso sequencer ready for integration with intent settlement                              |
+```mermaid
+flowchart TD
+    A[User Wallet (4337)] -->|submit UserOp| B(IntentExecutor)
+    B -->|dispatch calldata| C(SafeYieldVault)
+    B -->|optional routing| D(IntentRouter)
+    C --> E[Strategy Plugin (FixedRate)]
+    A -->|validate signature| F(AuthenticationManager)
+```
 
 ---
 
 ## 🛠️ Contracts Overview
 
-| Contract                    | Role                                                            |
-| --------------------------- | --------------------------------------------------------------- |
-| `SafeYieldVault.sol`        | Vault for deposits, withdrawals, and auto-claiming yield        |
-| `IYieldStrategy.sol`        | Interface for dynamic strategy integration                      |
-| `FixedRateStrategy.sol`     | Example yield plugin with static APR                            |
-| `SafeYieldWallet.sol`       | Smart Account wallet with EIP-4337-style validation + execution |
-| `AuthenticationManager.sol` | Verifies users via passkey hash (WebAuthn-like auth)            |
-| `IntentExecutor.sol`        | Executes a `UserOperation` or batch (intents)                   |
-| `IntentRouter.sol`          | Handles routing of text-based actions to proper contracts       |
-| `MockDepositTarget.sol`     | Dummy contract for simulating external target calls             |
-| `MockERC20.sol`             | Test token for validating transfers, deposits, and balances     |
+| Contract                    | Role                                                                      |
+| --------------------------- | ------------------------------------------------------------------------- |
+| `SafeYieldVault.sol`        | Core yield vault. Supports `deposit`, `withdraw`, `claimYield`            |
+| `FixedRateStrategy.sol`     | Pluggable strategy that accrues static APR on vault deposits              |
+| `IYieldStrategy.sol`        | Strategy plugin interface. Vaults can attach/replace strategies           |
+| `SafeYieldWallet.sol`       | EntryPoint-compatible wallet that validates and executes `UserOperation`s |
+| `AuthenticationManager.sol` | Manages passkey identities, hashes, and signature validation              |
+| `IntentExecutor.sol`        | Smart contract that routes raw `callData` to proper vault/target          |
+| `IntentRouter.sol`          | Maps intent strings or categories to vault/strategy contracts             |
+| `MockDepositTarget.sol`     | Simulated external DeFi target for intent dispatch testing                |
+| `MockERC20.sol`             | Test token for mocking real ERC20 usage (e.g. USDC/DAI)                   |
 
 ---
 
-## 🔬 Test Coverage
+## 🧪 Foundry Test Coverage
 
-All contracts are tested using Foundry with high verbosity logs (`forge test -vvvv`).  
-Sample tests implemented include:
+Run tests:
 
-- ✅ `IntentExecutor.t.sol`: Execute intent, batch intents, emit event
-- ✅ `SafeYieldVault.t.sol`: Deposit, withdraw, auto-claim, yield accrual
-- ✅ `AuthenticationManager.t.sol`: Register and verify passkey
-- ✅ `SafeYieldWallet.t.sol`: Validate `UserOperation` with correct passkey
-- ✅ `IntentRouter.t.sol`: Route different intents
-- ✅ `EarnRouter.t.sol`: (Optional placeholder)
-
----
-
-## 📂 Project Structure
-
+```bash
+forge install
+forge build
+forge test -vvvv
 ```
 
+| File                          | Test Scenarios Covered                            |
+| ----------------------------- | ------------------------------------------------- |
+| `IntentExecutor.t.sol`        | Dispatch calldata, validate access, emit logs     |
+| `SafeYieldVault.t.sol`        | Deposit, withdraw, accrue yield, edge cases       |
+| `AuthenticationManager.t.sol` | Register + verify passkey, check invalid attempts |
+| `SafeYieldWallet.t.sol`       | `validateUserOp`, signature integration, nonce    |
+| `IntentRouter.t.sol`          | Route intents to right vaults                     |
+| `EarnRouter.t.sol`            | (Optional future extension - investment plan)     |
+
+---
+
+## 📁 Project Structure
+
+```
 contracts/
 │
 ├── src/
-│ ├── AuthenticationManager.sol
-│ ├── EarnRouter.sol
-│ ├── IntentExecutor.sol
-│ ├── IntentRouter.sol
-│ ├── SafeYieldVault.sol
-│ ├── SafeYieldWallet.sol
-│ │
-│ ├── lib/
-│ │ └── UserOperation.sol
-│ │
-│ ├── mocks/
-│ │ ├── MockERC20.sol
-│ │ └── MockDepositTarget.sol
-│ │
-│ ├── strategies/
-│ │ ├── IYieldStrategy.sol
-│ │ └── FixedRateStrategy.sol
+│   ├── AuthenticationManager.sol
+│   ├── EarnRouter.sol
+│   ├── IntentExecutor.sol
+│   ├── IntentRouter.sol
+│   ├── SafeYieldVault.sol
+│   ├── SafeYieldWallet.sol
+│   │
+│   ├── lib/
+│   │   └── UserOperation.sol
+│   │
+│   ├── mocks/
+│   │   ├── MockERC20.sol
+│   │   └── MockDepositTarget.sol
+│   │
+│   ├── strategies/
+│   │   ├── IYieldStrategy.sol
+│   │   └── FixedRateStrategy.sol
 │
 ├── test/
-│ ├── AuthenticationManager.t.sol
-│ ├── EarnRouter.t.sol
-│ ├── IntentExecutor.t.sol
-│ ├── IntentRouter.t.sol
-│ ├── SafeYieldVault.t.sol
-│ ├── SafeYieldWallet.t.sol
+│   ├── AuthenticationManager.t.sol
+│   ├── EarnRouter.t.sol
+│   ├── IntentExecutor.t.sol
+│   ├── IntentRouter.t.sol
+│   ├── SafeYieldVault.t.sol
+│   ├── SafeYieldWallet.t.sol
 │
 ├── foundry.toml
 └── README.md
-
 ```
 
 ---
 
-## ⚙️ Tools & Stack
+## 🔌 Integration Points
 
-- 🧱 **Foundry** for contract development and testing
-- 🧠 **EIP-4337 (Account Abstraction)** structure for smart wallets
-- 🧬 **Modular vault strategies** (Composable)
-- 🌐 **Passkey Authentication** via keccak256 of user credential
-- 🔁 **Intent Framework**: ERC-7683-ready structure
-- 🔗 **Espresso / HotShot (optional)**: Sequencer-based settlement
-
----
-
-## 📢 Next Steps
-
-- 🔄 Deploy contracts to Sepolia for Espresso/Intents testing
-- 🧪 Integrate with StackUp or Pimlico bundler
-- ⚡ Connect the AI agent from `ai/` folder to submit `UserOperation`s here
-- 🌉 Plug in actual DeFi strategies (Aave, Compound) into `IYieldStrategy`
+| Layer              | Connected To                             |
+| ------------------ | ---------------------------------------- |
+| Backend            | Submits UserOperations to Wallet         |
+| Espresso Sequencer | (Optional) Verifies inclusion of intents |
+| StackUp/Pimlico    | Bundler endpoint for UserOp relay        |
+| Frontend           | WebAuthn passkey + intent input          |
 
 ---
 
-## 👨‍🔬 Authors & Contributions
+## 🧠 Intent Architecture
 
-Developed by **Sama7.eth** for DoraHacks 2025.
+This system implements the **Open Intents Framework (ERC-7683)**:
 
-Looking to build the future of AI-driven DeFi experiences with account abstraction, biometric auth, and intuitive intent-based UX.
+- Intent is parsed from natural language via AI Agent
+- Transformed into structured `UserOperation`
+- Executed via bundler → EntryPoint → Smart Wallet
+- Vault and Strategy plug-ins handle logic modularly
 
 ---
 
-```
+## 💡 Targeted Hackathon Tracks
 
-```
+| Track                      | ✅ Covered | Details                                     |
+| -------------------------- | ---------- | ------------------------------------------- |
+| Open Intents Applications  | ✅         | Full support via intent parsing and routing |
+| Best Composable DeFi Apps  | ✅         | Modular vault system + swappable strategies |
+| AI + Wallet UI Integration | ✅         | UserOp built via backend AI agent           |
+| Core Espresso Challenge    | ✅         | Espresso RPC integration for inclusion      |
+
+---
+
+## 📦 Dependencies
+
+- ✅ Foundry (via `forge install`)
+- ✅ Solidity ≥0.8.19
+- ✅ OpenZeppelin Contracts v5 (via `lib/openzeppelin-contracts`)
+- ✅ ERC-4337 interfaces (UserOperation, EntryPoint)
+- ✅ Espresso Sequencer RPC (optional)
+
+---
+
+## 📢 Suggested Next Steps
+
+- ✅ Deploy contracts to Arbitrum Sepolia (for Espresso testing)
+- ✅ Integrate with real bundler like StackUp
+- ✅ Deploy frontend to submit passkey-authenticated UserOps
+- ✅ Test `vault → strategy → yield claim` end-to-end flow
+
+---
+
+## 👩‍💻 Author
+
+Built with ❤️ by **[@samarabdelhameed](https://github.com/samarabdelhameed)**  
+for [DoraHacks Build & Brew Hackathon – Espresso Network](https://dorahacks.io/hackathon/build-and-brew)
+
+---
