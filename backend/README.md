@@ -1,163 +1,185 @@
-backend/
-│
-├── controllers/  
-│ ├── authController.js
-│ ├── intentController.js
-│ ├── recommendationController.js
-│ └── espressoController.js
-│
-├── routes/  
-│ ├── auth.js
-│ ├── intent.js
-│ ├── recommendation.js
-│ └── espresso.js
-│
-├── services/  
-│ ├── userOpBuilder.js
-│ ├── bundlerService.js
-│ └── aiAgent.js
-│
-├── models/  
-│ ├── User.js
-│ └── Transaction.js
-│
-├── utils/  
-│ └── logger.js
-│
-├── config/ # config files مثل db.js و env loader
-│ ├── db.js
-│ └── dotenv.js
-│
-├── app.js # Express instance & middlewares
-├── server.js #
-├── .env.example
-└── package.json
-
-````
-
----
-
-
-```markdown
-# 🧠 SafeYield AI Wallet — Backend (Express.js)
-
-> ✨ Secure. Smart. Intent-based. Welcome to the future of programmable wallets powered by AI, WebAuthn, and EIP-4337.
-
 ## 🔍 Overview
 
-This backend powers the SafeYield AI Wallet's smart intent execution system. It:
+This backend is the core engine powering the **SafeYield AI Wallet**, enabling users to:
 
-- Authenticates users via Passkey/WebAuthn (Passwordless)
-- Parses user intents like "I want to earn yield on my USDC"
-- Calls an AI agent to recommend the best DeFi protocol
-- Constructs and sends EIP-4337 `UserOperation`s to the Bundler
-- Verifies sequencing through Espresso integration
+- ✅ Authenticate via **Passkeys/WebAuthn**
+- ✅ Submit **natural language intents** (e.g. “I want to stake my USDC”)
+- ✅ Get real-time **DeFi protocol recommendations** via an AI agent
+- ✅ Encode and dispatch **EIP-4337-compliant UserOperations**
+- ✅ Integrate with **Espresso Sequencer** for fast & secure intent confirmations
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer        | Tech                      |
-|--------------|---------------------------|
-| Server       | Node.js + Express.js      |
-| Auth         | Passkey/WebAuthn          |
-| AI Engine    | OpenAI API + LangChain    |
-| Intents      | ERC-7683 / Safe Abstraction |
-| Sequencer    | Espresso Systems          |
-| DB (optional)| MongoDB / PostgreSQL      |
+| Layer         | Tech                                     |
+| ------------- | ---------------------------------------- |
+| Server        | Node.js + Express.js                     |
+| AI Engine     | OpenAI API + LangChain (Agent)           |
+| Auth          | Passkey/WebAuthn + FIDO2                 |
+| Intents       | ERC-7683-compatible                      |
+| Sequencer     | [Espresso Systems](https://espresso.xyz) |
+| DB (optional) | MongoDB or PostgreSQL                    |
 
 ---
 
 ## 🧭 API Endpoints
 
-| Method | Route                     | Purpose                              |
-|--------|---------------------------|--------------------------------------|
-| POST   | `/api/auth/passkey`       | Register/Login user via passkey      |
-| POST   | `/api/intent`             | Analyze user intent text             |
-| POST   | `/api/recommendation`     | Get AI recommendation (e.g., Aave)   |
-| POST   | `/api/espresso/confirm`   | Confirm tx with Espresso sequencer   |
+| Method | Endpoint                | Purpose                                 |
+| ------ | ----------------------- | --------------------------------------- |
+| POST   | `/api/auth/passkey`     | Register/login via Passkey (WebAuthn)   |
+| POST   | `/api/intent`           | Parse user's natural language intent    |
+| POST   | `/api/recommendation`   | Return best protocol via AI agent       |
+| POST   | `/api/espresso/confirm` | Validate & confirm intent with Espresso |
 
 ---
 
-## 🧠 AI Agent
+## 🤖 AI Agent
 
-- Reads user's DeFi portfolio
-- Suggests best yield option
-- Simulates intent as EIP-4337 UserOperation
+The backend calls an AI agent that:
+
+- Reads portfolio data (optionally from frontend or DB)
+- Understands intents like "stake 100 USDC"
+- Selects best DeFi strategy (e.g., Aave, Compound)
+- Returns intent metadata: token, action, value, protocol
+
+The agent output is then transformed into an EIP-4337 `UserOperation`.
 
 ---
 
-## 🔐 Auth Flow (Passkey)
+## 🔐 Authentication Flow (Passkey / WebAuthn)
 
-- Frontend initiates WebAuthn
-- Sends result to `/api/auth/passkey`
-- Backend registers/verifies via FIDO2
-- Associates a `verifier` with user address
+1. Frontend registers user via browser WebAuthn
+2. Sends result to `POST /api/auth/passkey`
+3. Server verifies signature + stores `verifier` for the user
+4. Passkey becomes the only credential to validate UserOps
 
 ---
 
 ## 🔄 Intents to Execution Flow
 
-1. User writes: *"I want to stake 100 USDC"*
-2. `/api/intent` parses + extracts action + token + amount
-3. `/api/recommendation` returns best protocol (e.g., Aave)
-4. `/userOpBuilder.js` builds a `UserOperation`
-5. `/api/espresso/confirm` validates it with sequencer
-6. Bundler submits tx via EntryPoint
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant FE as Frontend
+    participant BE as Backend
+    participant AI as AI Agent
+    participant EP as EntryPoint
+    participant ESP as Espresso
+
+    U->>FE: "I want to earn yield"
+    FE->>BE: /api/intent
+    BE->>AI: Send prompt
+    AI->>BE: Recommended protocol (e.g. Aave)
+    BE->>BE: Build UserOperation
+    BE->>ESP: Confirm via Espresso
+    BE->>EP: Submit to EntryPoint
+```
 
 ---
 
-## 🧪 Testing & Local Dev
+## 📁 Folder Structure
+
+```
+backend/
+│
+├── controllers/
+│   ├── authController.js
+│   ├── intentController.js
+│   ├── recommendationController.js
+│   └── espressoController.js
+│
+├── routes/
+│   ├── auth.js
+│   ├── intent.js
+│   ├── recommendation.js
+│   └── espresso.js
+│
+├── services/
+│   ├── userOpBuilder.js       # Generates EIP-4337 ops
+│   ├── bundlerService.js      # Sends ops to bundler
+│   └── aiAgent.js             # Interfaces with OpenAI
+│
+├── models/
+│   ├── User.js
+│   └── Transaction.js
+│
+├── utils/
+│   └── logger.js
+│
+├── config/
+│   ├── db.js
+│   └── dotenv.js
+│
+├── app.js         # Express instance + middleware
+├── server.js      # Server entry point
+├── .env.example
+└── package.json
+```
+
+---
+
+## 💡 Integration with Smart Contracts
+
+This backend tightly integrates with custom smart contracts built using **Foundry**, such as:
+
+| Contract                    | Description                               |
+| --------------------------- | ----------------------------------------- |
+| `IntentExecutor.sol`        | Executes low-level calldata from intent   |
+| `SafeYieldVault.sol`        | Handles yield deposits & rewards          |
+| `SafeYieldWallet.sol`       | Smart Wallet (ERC-4337)                   |
+| `AuthenticationManager.sol` | Passkey authentication & mapping          |
+| `EntryPoint.sol` (4337)     | Handles validation and execution bundling |
+
+---
+
+## 🧩 Open Intents Framework
+
+This backend supports **ERC-7683** concepts via:
+
+- `POST /api/intent` as an intent parser
+- `IntentExecutor.sol` as the intent executor
+- `userOpBuilder.js` to encode the action
+- Espresso as the sequencer before finalization
+
+---
+
+## 🏆 Hackathon Tracks Covered
+
+| Track                         | Covered? |
+| ----------------------------- | -------- |
+| ✅ Open Intents Applications  | ✅       |
+| ✅ AI + Wallet UI Integration | ✅       |
+| ✅ Core Espresso Challenge    | ✅       |
+| ✅ Best Composable DeFi Apps  | ✅       |
+
+---
+
+## 🚀 Running Locally
 
 ```bash
 cd backend
 npm install
 npm run dev
-````
+```
 
-Use tools like [Postman](https://www.postman.com/) to test endpoints.
+Set your `.env` file using `.env.example`. You’ll need:
 
----
+- OpenAI API Key
+- MongoDB URL
+- RPC URL
+- Espresso node URL (optional)
 
-## 📦 Folder Structure
-
-Refer to the project structure in this repo: `backend/`
-
----
-
-## 💡 Open Intents Compatibility
-
-This backend integrates the Open Intents idea via:
-
-- `IntentExecutor.sol` contract
-- `/api/intent` & `/api/recommendation` AI middleware
-- Espresso + bundler-ready `UserOperation` builder
+Test via [Postman](https://postman.com) or cURL.
 
 ---
 
-## 🧩 Integration With Smart Contracts
+## 👩‍💻 Author
 
-The following contracts are used:
-
-- ✅ `IntentExecutor.sol` — Executes the encoded call
-- ✅ `SafeYieldVault.sol` — Target of most DeFi intents
-- ✅ `AuthenticationManager.sol` — Passkey auth verification
-- ✅ `SafeYieldWallet.sol` — ERC-4337 Smart Wallet
-- ✅ `EntryPoint.sol` — Supports bundling UserOperations
+Crafted with ❤️ by [@samarabdelhameed](https://github.com/samarabdelhameed)
 
 ---
 
-## 🏆 Target Hackathon Tracks Covered
+```
 
-| Track                             | ✅  |
-| --------------------------------- | --- |
-| Open Intents (Espresso + ERC7683) | ✅  |
-| AI + Wallet UI Integration        | ✅  |
-| Core Espresso Challenge           | ✅  |
-| Best Composable DeFi Apps         | ✅  |
-
----
-
-## 👩‍💻 Authors
-
-Built by [@samarabdelhameed](https://github.com/samarabdelhameed)
+```
